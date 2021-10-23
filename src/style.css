@@ -1,0 +1,122 @@
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0; 
+    padding: 0;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* HEADER */
+ .header {
+    background-color: #D7D6D6;
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+}
+
+.headerBrand { 
+    display: flex;
+    width: 100%;
+}
+.headerBrandTitle {
+    margin: 0;
+    font-size: 48px;
+    color: #5D5E60;
+}
+
+.headerBrand img {
+    width: 36px;
+    margin: 10px 100px 10px 100px;
+}
+
+/* CONTENT */
+.content{
+    flex-grow: 10;
+    display: flex;
+}
+
+.sideContent { 
+    flex-grow: 1;
+    border-right: 1px solid rgba(0,0,0,.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.sideContentHeader {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.sideContentHeader h2 {
+    margin: 0 25px;
+    font-size: 28px;
+    color: #5D5E60;
+}
+
+.sideContentMain {
+    flex-grow: 10;
+}
+
+.sideContentMain ul {
+    margin: 0 20px;
+    padding: 0;
+    list-style-type: none;
+}
+
+.sideContentMain button {
+    border: none;
+    background-color: rgb(255, 255, 255);
+    cursor: pointer;
+    padding:  10px 20px;
+    width: 100%;
+    text-align: left;
+ 
+}
+
+.sideContentMain button:hover{
+    background-color: rgb(243, 241, 241);
+    border-radius: 8px;
+}
+.mainContent {
+    flex: 10;
+}
+/* FOOTER */
+
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 0.25;
+    background-color: #D7D6D6;
+}
+
+.footer p {
+    font-size: 14px;
+    color: #5D5E60;
+    font-weight: 700;
+}
+
+.fab {
+    cursor: pointer;
+    font-size: 18px;
+}
+.footer a{
+    margin: 10px;
+}
+.footer a:visited {
+   color: black;
+}
+.fab:hover {
+    scale: 1.25;
+}
