@@ -112,10 +112,17 @@ body {
     list-style: none;
 }
 
+
+
 .mainContentMain button {
     flex-direction: row-reverse;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 16px;
+}
+
+
+.add button{
+    justify-content: center;
 }
 
 

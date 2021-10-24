@@ -101,8 +101,20 @@ mainContentMain.classList.add("mainContentMain");
 const mainContentMainList = document.createElement("ul");
 mainContentMain.appendChild(mainContentMainList);
 
+const mainContentMainAdd = document.createElement("li");
+mainContentMainList.appendChild(mainContentMainAdd);
+mainContentMainAdd.classList.add("add");
+
+const mainContentMainToDoAdd = document.createElement("button");
+mainContentMainAdd.appendChild(mainContentMainToDoAdd);
+mainContentMainToDoAdd.textContent = "Click here to add new Item";
+mainContentMainToDoAdd.addEventListener("click", createTodo);
+
+
 const mainContentMainItem = document.createElement("li");
 mainContentMainList.appendChild(mainContentMainItem);
+const TodoArr = [];
+TodoArr.push(mainContentMainItem);
 
 const mainContentMainToDo = document.createElement("button");
 mainContentMainItem.appendChild(mainContentMainToDo);
@@ -111,6 +123,9 @@ mainContentMainToDo.textContent = "default";
 const mainContentMainToDoCheck = document.createElement("i");
 mainContentMainToDo.appendChild(mainContentMainToDoCheck);
 mainContentMainToDoCheck.classList.add("far", "fa-square");
+const checkArr = [];
+checkArr.push(mainContentMainToDoCheck);
+mainContentMainToDoCheck.addEventListener("click", checkTodo);
 
 
 //FOOTER
@@ -140,7 +155,7 @@ function createProject() {
         return;
     }
     const project = new Func.Project(projectName);
-    project.sayName();
+    project.printObj();
     const sideContentMainProjectItem = document.createElement("li");
     sideContentMainList.appendChild(sideContentMainProjectItem);
     projectsArr.push(sideContentMainProjectItem);
@@ -148,7 +163,10 @@ function createProject() {
     const sideContentMainProject = document.createElement("button");
     sideContentMainProjectItem.appendChild(sideContentMainProject);
     sideContentMainProject.textContent = `${projectName}`;
-    sideContentMainProject.addEventListener("click", changeMainHeader);
+    sideContentMainProject.addEventListener("click", function(e){
+        changeMainHeader(e);
+        project.printObj();
+    });
 
     const sideContentMainProjectDel = document.createElement("i");
     sideContentMainProject.appendChild(sideContentMainProjectDel);
@@ -163,9 +181,38 @@ function deleteProject(e) {
 }
 
 
-function changeMainHeader() {
-    mainContentHeaderTitle.textContent = this.textContent;
+function changeMainHeader(arg) {
+    mainContentHeaderTitle.textContent = arg.target.textContent;
 }
+
+function createTodo() {
+    const toDoName = prompt("Choose Item Name");
+    const toDoItem = document.createElement("li");
+    mainContentMainList.appendChild(toDoItem);
+    TodoArr.push(toDoItem);
+
+    const toDoButton = document.createElement("button");
+    toDoItem.appendChild(toDoButton);
+    toDoButton.textContent = toDoName;
+
+    const toDoCheck = document.createElement("i");
+    toDoButton.appendChild(toDoCheck);
+    toDoCheck.classList.add("far", "fa-square");
+    checkArr.push(toDoCheck);
+
+    toDoCheck.addEventListener("click", checkTodo);
+}
+
+function checkTodo(e) {
+    const checkIndex = checkArr.indexOf(e.target);
+    console.log(checkIndex);
+    console.log(TodoArr);
+    TodoArr[checkIndex].remove();
+}
+
+
+
+
 
 }
 
