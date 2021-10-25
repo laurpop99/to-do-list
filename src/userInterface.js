@@ -1,6 +1,7 @@
 import './style.css';
 import List from './images/list.svg';
 import * as Func from './functionality.js';
+import { closestIndexTo } from 'date-fns/esm';
 
 function displayPage() {
 const container = document.createElement("div");
@@ -63,9 +64,12 @@ sideContentMain.appendChild(sideContentMainList);
 const sideContentMainProjectItem = document.createElement("li");
 sideContentMainList.appendChild(sideContentMainProjectItem);
 
+
+
 const sideContentMainProject = document.createElement("button");
 sideContentMainProjectItem.appendChild(sideContentMainProject);
 sideContentMainProject.textContent = "default";
+const defaultProject = new Func.Project(`${sideContentMainProject.textContent}`);
 
 const sideContentMainProjectDel = document.createElement("i");
 sideContentMainProject.appendChild(sideContentMainProjectDel);
@@ -77,7 +81,13 @@ const deleteArr = [];
 deleteArr.push(sideContentMainProjectDel);
 
 sideContentMainProjectDel.addEventListener("click", deleteProject);
-sideContentMainProject.addEventListener("click", changeMainHeader);
+sideContentMainProject.addEventListener("click", function(e){
+    changeMainHeader(e);
+    defaultProject.printObj();
+    clearDisplay();
+    displayList(defaultProject);
+    
+});
 
 
 
@@ -98,35 +108,21 @@ const mainContentMain = document.createElement("div");
 mainContent.appendChild(mainContentMain);
 mainContentMain.classList.add("mainContentMain");
 
-const mainContentMainList = document.createElement("ul");
-mainContentMain.appendChild(mainContentMainList);
 
 const mainContentMainAdd = document.createElement("li");
-mainContentMainList.appendChild(mainContentMainAdd);
+mainContentMain.appendChild(mainContentMainAdd);
 mainContentMainAdd.classList.add("add");
+
+const mainContentMainList = document.createElement("ul");
+mainContentMain.appendChild(mainContentMainList);
 
 const mainContentMainToDoAdd = document.createElement("button");
 mainContentMainAdd.appendChild(mainContentMainToDoAdd);
 mainContentMainToDoAdd.textContent = "Click here to add new Item";
 mainContentMainToDoAdd.addEventListener("click", createTodo);
 
-
-const mainContentMainItem = document.createElement("li");
-mainContentMainList.appendChild(mainContentMainItem);
-const TodoArr = [];
-TodoArr.push(mainContentMainItem);
-
-const mainContentMainToDo = document.createElement("button");
-mainContentMainItem.appendChild(mainContentMainToDo);
-mainContentMainToDo.textContent = "default";
-
-const mainContentMainToDoCheck = document.createElement("i");
-mainContentMainToDo.appendChild(mainContentMainToDoCheck);
-mainContentMainToDoCheck.classList.add("far", "fa-square");
-const checkArr = [];
-checkArr.push(mainContentMainToDoCheck);
-mainContentMainToDoCheck.addEventListener("click", checkTodo);
-
+let TodoArr = [];
+let checkArr = [];
 
 //FOOTER
 const footer = document.createElement("div");
@@ -147,6 +143,8 @@ footerGitIcon.classList.add("fab", "fa-github");
 
 
 //FUNCTIONS
+let currentProject;
+
 
 function createProject() {
     const projectName = prompt("Choose a name for the project");
@@ -165,7 +163,15 @@ function createProject() {
     sideContentMainProject.textContent = `${projectName}`;
     sideContentMainProject.addEventListener("click", function(e){
         changeMainHeader(e);
+        currentProject = project;
         project.printObj();
+        clearDisplay();
+    
+        
+        displayList(currentProject);
+        console.log(TodoArr);
+        console.log(checkArr);
+       
     });
 
     const sideContentMainProjectDel = document.createElement("i");
@@ -173,6 +179,7 @@ function createProject() {
     sideContentMainProjectDel.classList.add("far", "fa-trash-alt");
     deleteArr.push(sideContentMainProjectDel);
     sideContentMainProjectDel.addEventListener("click", deleteProject);
+
 }
 
 function deleteProject(e) {
@@ -187,27 +194,71 @@ function changeMainHeader(arg) {
 
 function createTodo() {
     const toDoName = prompt("Choose Item Name");
-    const toDoItem = document.createElement("li");
-    mainContentMainList.appendChild(toDoItem);
-    TodoArr.push(toDoItem);
+    const toDoObj = new Func.TodoList(toDoName);
+    currentProject.toDoList.push(toDoObj);
+    createList(currentProject);
 
-    const toDoButton = document.createElement("button");
-    toDoItem.appendChild(toDoButton);
-    toDoButton.textContent = toDoName;
+}
 
-    const toDoCheck = document.createElement("i");
-    toDoButton.appendChild(toDoCheck);
-    toDoCheck.classList.add("far", "fa-square");
-    checkArr.push(toDoCheck);
+function clearDisplay(){
+    mainContentMainList.textContent = "";
+    TodoArr = [];
+    checkArr = [];
+}
 
-    toDoCheck.addEventListener("click", checkTodo);
+function createList(parent){
+        const toDoItem = document.createElement("li");
+        TodoArr.push(toDoItem);
+        mainContentMainList.appendChild(toDoItem);
+        
+        
+        const toDoButton = document.createElement("button");
+        toDoItem.appendChild(toDoButton);
+        toDoButton.textContent = parent.toDoList[parent.toDoList.length-1].name;
+       
+    
+        const toDoCheck = document.createElement("i");
+        toDoButton.appendChild(toDoCheck);
+        toDoCheck.classList.add("far", "fa-square");
+         checkArr.push(toDoCheck);
+        toDoCheck.addEventListener("click", checkTodo);
+}
+
+function displayList(parent){
+    for(let i = 0; i < parent.toDoList.length; i++){
+        const toDoItem = document.createElement("li");
+        TodoArr.push(toDoItem);
+        mainContentMainList.appendChild(toDoItem);
+        
+        
+        const toDoButton = document.createElement("button");
+        toDoButton.textContent = parent.toDoList[i].name;
+        toDoItem.appendChild(toDoButton);
+    
+        const toDoCheck = document.createElement("i");
+        toDoButton.appendChild(toDoCheck);
+        toDoCheck.classList.add("far", "fa-square");
+        checkArr.push(toDoCheck);
+        toDoCheck.addEventListener("click", checkTodo);
+        
+    }
 }
 
 function checkTodo(e) {
     const checkIndex = checkArr.indexOf(e.target);
+    removeFromTodo(currentProject, checkIndex);
+    TodoArr[checkIndex].remove();
+    TodoArr.splice(checkIndex,1);
+    checkArr.splice(checkIndex,1);
     console.log(checkIndex);
     console.log(TodoArr);
-    TodoArr[checkIndex].remove();
+
+   
+    
+}
+
+function removeFromTodo(proj, index){
+    proj.toDoList.splice(index,1);
 }
 
 

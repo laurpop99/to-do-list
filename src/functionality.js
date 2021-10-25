@@ -1,3 +1,4 @@
+import * as UI from './userInterface.js';
 export function Project(name) {
     this.name = name;
     this.toDoList = [];
@@ -20,6 +21,8 @@ export function TodoList(name, description, deadline) {
         console.log(this);
     }
 }
+
+
 
 
 
