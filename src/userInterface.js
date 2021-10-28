@@ -32,6 +32,31 @@ const content = document.createElement("div");
 container.appendChild(content);
 content.classList.add("content");
 
+let TodoArr = [];
+let checkArr = [];
+let currentProject;
+let projectsArr = [];
+let objArr = [];
+let deleteArr = [];
+getProject();
+//JSON localStorage *-----
+if (localStorage.length === 0 || localStorage.objArr === "null")  {
+    saveProject();
+    objArr = [];
+}
+function getProject(){
+    objArr = [];
+    let getProject = localStorage.getItem("objArr");
+    objArr = JSON.parse(getProject);
+    console.log("retrievedObject: ", JSON.parse(getProject));
+}
+
+function saveProject(){
+    localStorage.setItem("objArr", JSON.stringify(objArr));
+    // console.log(localStorage.getItem("objArr"));
+    
+}
+
 
 //SIDE-CONTENT
 const sideContent = document.createElement("div");
@@ -51,7 +76,12 @@ sideContentHeader.appendChild(sideContentHeaderIcon);
 sideContentHeaderIcon.classList.add("fas", "fa-plus-circle");
 
 const plusButton = document.querySelector(".fas");
-plusButton.addEventListener("click", createProject);
+plusButton.addEventListener("click", function(){
+ 
+    createProject();
+
+   
+});
 
 
 const sideContentMain = document.createElement("div");
@@ -63,33 +93,39 @@ sideContentMain.appendChild(sideContentMainList);
 
 const sideContentMainProjectItem = document.createElement("li");
 sideContentMainList.appendChild(sideContentMainProjectItem);
+// projectsArr.push(sideContentMainProjectItem);
 
 
 
 const sideContentMainProject = document.createElement("button");
 sideContentMainProjectItem.appendChild(sideContentMainProject);
 sideContentMainProject.textContent = "default";
-const defaultProject = new Func.Project(`${sideContentMainProject.textContent}`);
-
-const sideContentMainProjectDel = document.createElement("i");
-sideContentMainProject.appendChild(sideContentMainProjectDel);
-sideContentMainProjectDel.classList.add("far", "fa-trash-alt");
-
-const projectsArr = [];
-projectsArr.push(sideContentMainProjectItem);
-const deleteArr = [];
-deleteArr.push(sideContentMainProjectDel);
-
-sideContentMainProjectDel.addEventListener("click", deleteProject);
-sideContentMainProject.addEventListener("click", function(e){
-    changeMainHeader(e);
-    defaultProject.printObj();
-    clearDisplay();
-    displayList(defaultProject);
-    
-});
+const project = new Func.Project(`default`);
 
 
+
+if(!containsObj(objArr, project)){
+objArr.push(project);
+}
+
+
+
+function containsObj(obj,proj) {
+    for ( let i = 0; i < obj.length; i++){
+        if(obj[i].name === proj.name) {
+            console.log(true);
+            return true;
+        }
+    }
+    console.log(false);
+    return false;
+}
+
+saveProject();
+
+
+
+clearProjects();
 
 //MAIN-CONTENT
 const mainContent = document.createElement("div");
@@ -121,8 +157,7 @@ mainContentMainAdd.appendChild(mainContentMainToDoAdd);
 mainContentMainToDoAdd.textContent = "Click here to add new Item";
 mainContentMainToDoAdd.addEventListener("click", createTodo);
 
-let TodoArr = [];
-let checkArr = [];
+
 
 //FOOTER
 const footer = document.createElement("div");
@@ -143,8 +178,9 @@ footerGitIcon.classList.add("fab", "fa-github");
 
 
 //FUNCTIONS
-let currentProject;
 
+
+displayProjects();
 
 function createProject() {
     const projectName = prompt("Choose a name for the project");
@@ -153,38 +189,33 @@ function createProject() {
         return;
     }
     const project = new Func.Project(projectName);
-    project.printObj();
-    const sideContentMainProjectItem = document.createElement("li");
-    sideContentMainList.appendChild(sideContentMainProjectItem);
-    projectsArr.push(sideContentMainProjectItem);
-
-    const sideContentMainProject = document.createElement("button");
-    sideContentMainProjectItem.appendChild(sideContentMainProject);
-    sideContentMainProject.textContent = `${projectName}`;
-    sideContentMainProject.addEventListener("click", function(e){
-        changeMainHeader(e);
-        currentProject = project;
-        project.printObj();
-        clearDisplay();
+    objArr.push(project);
+    saveProject();
+    clearProjects()
+    displayProjects();
     
-        
-        displayList(currentProject);
-        console.log(TodoArr);
-        console.log(checkArr);
-       
-    });
-
-    const sideContentMainProjectDel = document.createElement("i");
-    sideContentMainProject.appendChild(sideContentMainProjectDel);
-    sideContentMainProjectDel.classList.add("far", "fa-trash-alt");
-    deleteArr.push(sideContentMainProjectDel);
-    sideContentMainProjectDel.addEventListener("click", deleteProject);
 
 }
 
+function clearProjects() {
+    sideContentMainList.textContent = "";
+    deleteArr = [];
+    projectsArr = [];
+}
 function deleteProject(e) {
     const deleteIndex = deleteArr.indexOf(e.target);
+    // console.log(projectsArr);
+    // console.log(deleteIndex);
     projectsArr[deleteIndex].remove();
+    projectsArr.splice(deleteIndex,1);
+    deleteArr.splice(deleteIndex,1);
+    
+    objArr.splice(deleteIndex,1);
+    // console.log(objArr);
+    // console.log(deleteArr);
+    saveProject();
+    
+    
 }
 
 
@@ -194,9 +225,15 @@ function changeMainHeader(arg) {
 
 function createTodo() {
     const toDoName = prompt("Choose Item Name");
+    if(toDoName === "")
+    {
+        alert("List item can't be empty!");
+        return;
+    }
     const toDoObj = new Func.TodoList(toDoName);
     currentProject.toDoList.push(toDoObj);
     createList(currentProject);
+    saveProject();
 
 }
 
@@ -252,6 +289,7 @@ function checkTodo(e) {
     checkArr.splice(checkIndex,1);
     console.log(checkIndex);
     console.log(TodoArr);
+    saveProject();
 
    
     
@@ -261,7 +299,35 @@ function removeFromTodo(proj, index){
     proj.toDoList.splice(index,1);
 }
 
+function displayProjects() {
+    for(let i = 0; i < objArr.length; i++) {
+        const sideContentMainProjectItem = document.createElement("li");
+    sideContentMainList.appendChild(sideContentMainProjectItem);
+    projectsArr.push(sideContentMainProjectItem);
+    saveProject();
 
+    const sideContentMainProject = document.createElement("button");
+    sideContentMainProjectItem.appendChild(sideContentMainProject);
+    sideContentMainProject.textContent = `${objArr[i].name}`;
+    sideContentMainProject.addEventListener("click", function(e){
+        changeMainHeader(e);
+        currentProject = objArr[i];
+        // console.log(objArr[i]);
+        console.log(currentProject);
+        clearDisplay();
+        console.log(projectsArr);
+        displayList(currentProject);
+        console.log(objArr);
+       
+    });
+
+    const sideContentMainProjectDel = document.createElement("i");
+    sideContentMainProject.appendChild(sideContentMainProjectDel);
+    sideContentMainProjectDel.classList.add("far", "fa-trash-alt");
+    deleteArr.push(sideContentMainProjectDel);
+    sideContentMainProjectDel.addEventListener("click", deleteProject);
+    }
+}
 
 
 
